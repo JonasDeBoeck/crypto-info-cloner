@@ -1,37 +1,66 @@
-# Assignment
+# Assignment Distributed Applications 20-21
 
 ## Rules
 
-Describe the rules
+Read the [rules](rules.md). Submission details and deadline is described in this file.
 
 ## Project overview
 
 ### Goal
 
-Describe the goal of the project.
+We want to make a platform that allows us to do calculations on past data. In order to make this performant (and make up-to-date) ML models, you'll want to have this data locally.
+
+You'll create a distributed application using Kafka en Elixir's distributed communication in order to obtain this data. Why should we do this in a distributed approach? It is often that network communication is the bottleneck in applications. Hence that you'll want to use multiple IP addresses to e.g. webscrape / access API's / ... .
 
 ### Technologies
 
-Describe what technologies you'll use (and why)
+#### Kafka
+
+Since our events can be processed in an asynchronous way without any problems, we'll use Kafka to orchestrate the communication and make our application horizontally scalable.
+
+Reliability will be achieved thanks to the events that are recorded on the kafka topics. You can find a schema later on. You'll have to think of the communication through your application in events.
+
+#### Distributed Elixir
+
+To not only see one approach to distributed applications in this assignment, we'll also be using distributed Elixir. The idea is that you can create multiple workers behind a single IP (e.g. public IP that is NAT'ted to private ip's) and use multiple nodes to achieve a tolerant application (in case a node crashes for example).
+
+In the above case, you'll want to manage your rate over different nodes. E.g. node 1 and 2 __together__ can only have a maximum rate of 6 req/s because they're using a single public IP address. Details regarding the API and implementation will be discussed later on.
+
+It is not often that you'll use these 2 approaches to distributed applications in a single application. _We are aware that this is a bit forced for educational purposes._
 
 ### High level schema
 
-Post an image here of the kafka topics schema + nodes that are connected
+The complete application architecture will look like [this](high_level_schema.png). Every piece will be explained in detail.
 
-## Constraints
+## Application requirements
+
+Constraints are written in the specifica application requirements files.
 
 ### Director application
 
-...
+Read the requirements for the [director application](director_application_requirements.md).
 
-### ChunkCreator application
+### Chunk creator application
 
-...
+Read the requirements for the [chunk creator application](chunk_creator_application_requirements.md).
 
-### ClonerNode
+### Cloner worker application
 
-use worker groups with genserver manager
+Read the requirements for the [cloner worker application](cloner_worker_application_requirements.md).
 
-### ClonerRateLimiter
+### Cloner ratelimiter application
 
-limit rade inter-node wise.
+Read the requirements for the [chunk creator application](cloner_ratelimiter_application_requirements.md).
+
+## Some things to get you started
+
+We provide you with 2 libraries:
+
+* [Messages library](https://github.com/distributed-applications-2021/assignment-messages). This will describe how the data in the messages should be put on your Kafka topics.
+* [Database interaction library](https://github.com/distributed-applications-2021/assignment-database-interaction). This will abstract away how you'll have to interact with the database.
+
+Both libraries restrict you to store and pass the data along in a specific format. While this isn't the most enjoyable developer experience, this does give us the opportunity to quickly test all implementations as they use the same naming conventions, structs, encoded messages, and so on.
+
+## Constraints
+
+We provide a [script](project_test.sh) to see whether you are conform to the project naming convections. Every small sub application will have its own naming conventions. Adhere to these or our tests will fail automatically! Same goes for the topic names, topic partitions, application names, and so on.
