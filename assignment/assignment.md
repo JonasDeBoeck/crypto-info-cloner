@@ -30,7 +30,7 @@ It is not often that you'll use these 2 approaches to distributed applications i
 
 ### High level schema
 
-The complete application architecture will look like [this](high_level_schema.png). Every piece will be explained in detail.
+The complete application architecture will look like [this](schema2.png). Every piece will be explained in detail.
 
 ## Application requirements
 
@@ -50,7 +50,7 @@ Read the requirements for the [cloner worker application](cloner_worker_applicat
 
 ### Cloner ratelimiter application
 
-Read the requirements for the [chunk creator application](cloner_ratelimiter_application_requirements.md).
+Read the requirements for the [cloner rate limiter application](cloner_ratelimiter_application_requirements.md).
 
 ## Some things to get you started
 

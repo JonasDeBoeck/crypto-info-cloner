@@ -1,3 +1,3 @@
 # Assignment
 
-Read [assignment.md](assignment.md)
+Read [assignment.md](assignment/assignment.md)
