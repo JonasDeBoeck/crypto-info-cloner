@@ -6,11 +6,28 @@ While this uses the same database as our director application, do understand tha
 
 ## Goal
 
-TODO: write this
+Process __TodoTask__. These come from the director application and will contain the information of the information that needs to be fetched.
+
+Create new __TodoChunk__. In this application, a chunk is defined as:
+
+```text
+A TodoChunk is a structure that contains a currency pair, a task id and two timestamps that indicate the interval where the information from the currency pair still needs to be fetched.
+```
+
+Process __ClonedChunk__ that are created by the workers.
+
+```text
+A ClonedChunk is a structure, created by the workers, that contain the fetched result. The Result enum tells whether the fetched result is complete or whether the time window was to big. When the chunk is complete you can find the fetched information in the collection of entries.
+```
 
 ## Data flow
 
-TODO: write this
+The chunk creator will use following topics:
+
+* `todo-task` => use the `AssignmentMessages.TodoTask` struct from the extra library to encode your messages.
+* `finished-task` => use the `AssignmentMessages.TaskResponse` struct
+* `todo-chunk` => use the `AssignmentMessages.TodoChunk` struct
+* `finished-chunks` => use the `AssignmentMessages.ClonedChunk` struct
 
 ## Libraries and usage for this application
 
@@ -29,7 +46,7 @@ Every topic should at least have 2 partitions.
 
 ### API & functionality constriants
 
-TODO: write this
+Since this m
 
 ### Config constraints
 
