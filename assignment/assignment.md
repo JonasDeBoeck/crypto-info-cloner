@@ -32,6 +32,8 @@ It is not often that you'll use these 2 approaches to distributed applications i
 
 The complete application architecture will look like [this](schema2.png). Every piece will be explained in detail.
 
+The database will look like [this](db_schema.png). You won't have to interact with this directly as we'll provide a library for that. In this library, we will set up some queries, transactions, unique constraints and so on.
+
 ## Application requirements
 
 Constraints are written in the specifica application requirements files.

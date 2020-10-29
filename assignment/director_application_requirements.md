@@ -46,7 +46,7 @@ Every topic should at least have 2 partitions.
 
 When a task is completed, it suffices to just print a `Logger` message. E.g. "there has been a task conflict for the task ..." or "The following task has been completed: ...".
 
-### API & functionality constriants
+### API & functionality constraints
 
 Create the following functions:
 
