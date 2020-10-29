@@ -6,6 +6,8 @@ While this uses the same database as our director application, do understand tha
 
 ## Goal
 
+__START OF TODO: REREAD__
+
 The goal of this application is to verify incoming tasks, chunk the task up in chunks based on a config setting, put the chunks on the `todo-chunks` topic and await the result from the ``
 
 ## Data flow
@@ -19,6 +21,33 @@ It will also consume the `finished-chunks` topic. It'll have to do the following
 
  1. Check the `chunk_result`. If it is `WINDOW_TOO_BIG`, update your database that 2 smaller chunks need to be cloned. Also put these chunks again on the `todo-chunks` topic.
  2. If the result is good, update your database (and check if your task is complete). If your task is complete, put it on the `finished-tasks` topic with the `:COMPLETE` status.
+
+
+
+Process __TodoTask__. These come from the director application and will contain the information of the information that needs to be fetched.
+
+Create new __TodoChunk__. In this application, a chunk is defined as:
+
+```text
+A TodoChunk is a structure that contains a currency pair, a task id and two timestamps that indicate the interval where the information from the currency pair still needs to be fetched.
+```
+
+Process __ClonedChunk__ that are created by the workers.
+
+```text
+A ClonedChunk is a structure, created by the workers, that contain the fetched result. The Result enum tells whether the fetched result is complete or whether the time window was to big. When the chunk is complete you can find the fetched information in the collection of entries.
+```
+
+## Data flow
+
+The chunk creator will use following topics:
+
+* `todo-task` => use the `AssignmentMessages.TodoTask` struct from the extra library to encode your messages.
+* `finished-task` => use the `AssignmentMessages.TaskResponse` struct
+* `todo-chunk` => use the `AssignmentMessages.TodoChunk` struct
+* `finished-chunks` => use the `AssignmentMessages.ClonedChunk` struct
+
+__END OF TODO: REREAD__
 
 ## Libraries and usage for this application
 
@@ -37,7 +66,7 @@ Every topic should at least have 2 partitions.
 
 ### API & functionality constraints
 
-You don't have an API here.
+TODO: work with kafkacontext
 
 ### Config constraints
 
