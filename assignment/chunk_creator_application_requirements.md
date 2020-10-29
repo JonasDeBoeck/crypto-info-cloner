@@ -6,37 +6,19 @@ While this uses the same database as our director application, do understand tha
 
 ## Goal
 
-__START OF TODO: REREAD__
-
-The goal of this application is to verify incoming tasks, chunk the task up in chunks based on a config setting, put the chunks on the `todo-chunks` topic and await the result from the ``
+The goal of this application is to verify incoming tasks, chunk the task up in chunks based on a config setting, put the chunks on the `todo-chunks` topic and await the result from the `finished-chunks`
 
 ## Data flow
 
 This application will consume the `todo-tasks` topic. When a message arrives, it'll be responsible for:
 
  1. Checking whether it doesn't overlap with current tasks, if so emit a `AssignmentMessages.TaskResponse` with the `:TASK_CONFLICT` status.
- 2. If there are no problems, create a task, divide it up into chunks (and put everything in the database). After that put those chunks (that need to be cloned) on the `todo-chunks` topic.
+ 2. If there are no problems, create a task, divide it up into chunks (and put everything in the database). After that, it put those chunks (that need to be cloned) on the `todo-chunks` topic.
 
 It will also consume the `finished-chunks` topic. It'll have to do the following when a chunk its result is posted:
 
  1. Check the `chunk_result`. If it is `WINDOW_TOO_BIG`, update your database that 2 smaller chunks need to be cloned. Also put these chunks again on the `todo-chunks` topic.
  2. If the result is good, update your database (and check if your task is complete). If your task is complete, put it on the `finished-tasks` topic with the `:COMPLETE` status.
-
-
-
-Process __TodoTask__. These come from the director application and will contain the information of the information that needs to be fetched.
-
-Create new __TodoChunk__. In this application, a chunk is defined as:
-
-```text
-A TodoChunk is a structure that contains a currency pair, a task id and two timestamps that indicate the interval where the information from the currency pair still needs to be fetched.
-```
-
-Process __ClonedChunk__ that are created by the workers.
-
-```text
-A ClonedChunk is a structure, created by the workers, that contain the fetched result. The Result enum tells whether the fetched result is complete or whether the time window was to big. When the chunk is complete you can find the fetched information in the collection of entries.
-```
 
 ## Data flow
 
@@ -46,8 +28,6 @@ The chunk creator will use following topics:
 * `finished-task` => use the `AssignmentMessages.TaskResponse` struct
 * `todo-chunk` => use the `AssignmentMessages.TodoChunk` struct
 * `finished-chunks` => use the `AssignmentMessages.ClonedChunk` struct
-
-__END OF TODO: REREAD__
 
 ## Libraries and usage for this application
 
@@ -66,7 +46,7 @@ Every topic should at least have 2 partitions.
 
 ### API & functionality constraints
 
-TODO: work with kafkacontext
+Since there is no direct communication with the chunk creator, all communication goes through kafka, there is no need for an API. 
 
 ### Config constraints
 
@@ -78,4 +58,13 @@ This application will __only__ perform queries on the `TaskStatus`, `TaskRemaini
 
 ## Tips
 
-TODO: write this (and provide API of libraries)
+* `DatabaseInteraction.CurrencyPairContext.get_pair_by_name/1`
+* `DatabaseInteraction.TaskRemainingChunkContext.get_chunk_by/3`
+* `DatabaseInteraction.TaskRemainingChunkContext.changeset_mark_as_done/1`
+* `DatabaseInteraction.TaskRemainingChunkContext.halve_chunk/3`
+* `AssignmentMessages.TodoTask` struct
+* `AssignmentMessages.TaskResponse` struct
+* `AssignmentMessages.TodoChunk` struct
+* `AssignmentMessages.encode_message/1`
+
+
