@@ -8,7 +8,7 @@ The __chunk consumer__ will need to fetch the message from the `todo-chunk` topi
 The __rate limiter__ will control the amount of fetch request that will be send to the public API by selecting the workers that get permission to start their fetch proces.
 The __dynamic supervisor__ maintain and create workers in the worker pool.
 The __manager__ is the module that keeps track of the available workers, working workers and the fetch tasks that need to be done.
-The __worker__ is the module that will fetch the data from the public API. It will
+The __worker__ is the module that will fetch the data from the public API.
 
 ## Data flow
 
