@@ -7,10 +7,13 @@ This application is responsible for fetching the required information from the p
 The __chunk consumer__ will need to fetch the message from the `todo-chunk` topic, start the fetching process for the information in this message en send the result to the kafka on the `finished-chunk`.
 The __rate limiter__ will control the amount of fetch request that will be send to the public API by selecting the workers that get permission to start their fetch proces.
 The __dynamic supervisor__ maintain and create workers in the worker pool.
-The __manager__ is the module that keeps track of the available workers, working workers and the fetch tasks that need to be done.
+The __queue__ is a queue of tasks.
+The __manager__ is the module that keeps track of the available workers, working workers and give the tasks that need to be done to an available worker.
 The __worker__ is the module that will fetch the data from the public API.
 
 ## Data flow
+
+The __chunk consumer__ will start with consuming the message from the `todo-chunk` topic. It will decode the message and give the task to the __manager__, who will put this task on the __queue__. The __manager__ will periodically pull an task from the __queue__ and give it to an available worker. When a worker receives a task it will register with the rate limiter that he is waiting for permission to start his task. When he gets this permission he checks whether the window size is not to big and fetches the data from the public API. When the window size is to big, the worker will create an `AssignmentMessages.ClonedChunk` struct with `:WINDOW_TOO_BIG`. If the data fetch is succesful, the worker will put the data in a `AssignmentMessages.ClonedChunk` struct and send it back to the __manager__. If the fetch is not succesful, you need to log an error. 
 
 ## Libraries and usage for this application
 
