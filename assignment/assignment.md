@@ -20,13 +20,13 @@ Since our events can be processed in an asynchronous way without any problems, w
 
 Reliability will be achieved thanks to the events that are recorded on the kafka topics. You can find a schema later on. You'll have to think of the communication through your application in events.
 
-#### Distributed Elixir
+<!-- #### Distributed Elixir
 
 To not only see one approach to distributed applications in this assignment, we'll also be using distributed Elixir. The idea is that you can create multiple workers behind a single IP (e.g. public IP that is NAT'ted to private ip's) and use multiple nodes to achieve a tolerant application (in case a node crashes for example).
 
 In the above case, you'll want to manage your rate over different nodes. E.g. node 1 and 2 __together__ can only have a maximum rate of 6 req/s because they're using a single public IP address. Details regarding the API and implementation will be discussed later on.
 
-It is not often that you'll use these 2 approaches to distributed applications in a single application. _We are aware that this is a bit forced for educational purposes._
+It is not often that you'll use these 2 approaches to distributed applications in a single application. _We are aware that this is a bit forced for educational purposes._ -->
 
 ### High level schema
 
