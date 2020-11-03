@@ -46,7 +46,7 @@ Every topic should at least have 2 partitions.
 
 ### API & functionality constraints
 
-Since there is no direct communication with the chunk creator, all communication goes through kafka, there is no need for an API. 
+Since there is no direct communication with the chunk creator, all communication goes through kafka, there is no need for an API.
 
 ### Config constraints
 
