@@ -10,7 +10,7 @@ Read the [rules](rules.md). Submission details and deadline is described in this
 
 We want to make a platform that allows us to do calculations on past data. In order to make this performant (and make up-to-date) ML models, you'll want to have this data locally.
 
-You'll create a distributed application using Kafka en Elixir's distributed communication in order to obtain this data. Why should we do this in a distributed approach? It is often that network communication is the bottleneck in applications. Hence that you'll want to use multiple IP addresses to e.g. webscrape / access API's / ... .
+You'll create a distributed application using Kafka and Elixir<!-- 's distributed communication --> in order to obtain this data. Why should we do this in a distributed approach? It is often that network communication is the bottleneck in applications. Hence that you'll want to use multiple IP addresses to e.g. webscrape / access API's / ... .
 
 ### Technologies
 
