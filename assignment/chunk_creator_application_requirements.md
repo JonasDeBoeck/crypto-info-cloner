@@ -66,5 +66,3 @@ This application will __only__ perform queries on the `TaskStatus`, `TaskRemaini
 * `AssignmentMessages.TaskResponse` struct
 * `AssignmentMessages.TodoChunk` struct
 * `AssignmentMessages.encode_message/1`
-
-

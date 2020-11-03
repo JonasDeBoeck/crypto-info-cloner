@@ -50,10 +50,6 @@ Read the requirements for the [chunk creator application](chunk_creator_applicat
 
 Read the requirements for the [cloner worker application](cloner_worker_application_requirements.md).
 
-### Cloner ratelimiter application
-
-Read the requirements for the [cloner rate limiter application](cloner_ratelimiter_application_requirements.md).
-
 ## Some things to get you started
 
 We provide you with 2 libraries:
