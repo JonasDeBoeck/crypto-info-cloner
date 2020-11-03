@@ -4,12 +4,12 @@ This application is responsible for fetching the required information from the p
 
 ## Goal
 
-The __chunk consumer__ will need to fetch the message from the `todo-chunk` topic, start the fetching process for the information in this message en send the result to the kafka on the `finished-chunk`.
-The __rate limiter__ will control the amount of fetch request that will be send to the public API by selecting the workers that get permission to start their fetch proces.
-The __dynamic supervisor__ maintain and create workers in the worker pool.
-The __queue__ is a queue of tasks.
-The __manager__ is the module that keeps track of the available workers, working workers and give the tasks that need to be done to an available worker.
-The __worker__ is the module that will fetch the data from the public API.
+* The __chunk consumer__ will need to fetch the message from the `todo-chunk` topic, start the fetching process with the information in this message and send the result to the kafka on the `finished-chunk`.
+* The __rate limiter__ will control the amount of fetch request that will be send to the public API by selecting the workers that get permission to start their fetch proces.
+* The __dynamic supervisor__ maintain and create workers in the worker pool.
+* The __queue__ is a queue of tasks.
+* The __manager__ is the module that keeps track of the available workers, working workers and give the tasks that need to be done to an available worker.
+* The __worker__ is the module that will fetch the data from the public API.
 
 ## Data flow
 
@@ -28,10 +28,30 @@ Look at the readme / API overview how to use these.
 
 ### Kafka constraints
 
+/
+
 ### API & functionality constraints
+
+Here are some hints on what methods you can expect in the different modules:
+
+* Workerpool.Worker.clone_chunk
+* Workerpool.Queue.add_to_queue
+* Workerpool.Queue.get_first_element
+* Workerpool.WorkerManager.add_task
+* Workerpool.RateLimiter.register
+* Workerpool.RateLimiter.set_rate
 
 ### Config constraints
 
+/
+
 ### Design constraints
 
+This application will not interact with the database. We expect you to create a design that contains the modules as written in goal and the data flow statement.
+
 ## Tips
+
+* `AssignmentMessages.TodoChunk` struct
+* `AssignmentMessages.ClonedChunk` struct
+* `AssignmentMessages.ClonedEntry` struct 
+* AssignmentMessages.encode_message/1
