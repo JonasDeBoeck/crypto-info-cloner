@@ -6,11 +6,11 @@ While this uses the same database as our director application, do understand tha
 
 ## Goal
 
-The goal of this application is to verify incoming tasks, chunk the task up in chunks based on a config setting, put the chunks on the `todo-chunks` topic and await the result from the `finished-chunks`
+The goal of this application is to verify incoming tasks, chunk the task up in chunks based on a config setting, put the chunks on the `todo-chunks` topic and await the result from the `finished-chunks`.
 
 ## Data flow
 
-This application will consume the `todo-tasks` topic. When a message arrives, it'll be responsible for:
+When a message arrives on the `todo-tasks`, it'll be responsible for:
 
  1. Checking whether it doesn't overlap with current tasks, if so emit a `AssignmentMessages.TaskResponse` with the `:TASK_CONFLICT` status.
  2. If there are no problems, create a task, divide it up into chunks (and put everything in the database). After that, it put those chunks (that need to be cloned) on the `todo-chunks` topic.
@@ -20,13 +20,11 @@ It will also consume the `finished-chunks` topic. It'll have to do the following
  1. Check the `chunk_result`. If it is `WINDOW_TOO_BIG`, update your database that 2 smaller chunks need to be cloned. Also put these chunks again on the `todo-chunks` topic.
  2. If the result is good, update your database (and check if your task is complete). If your task is complete, put it on the `finished-tasks` topic with the `:COMPLETE` status.
 
-## Data flow
-
 The chunk creator will use following topics:
 
-* `todo-task` => use the `AssignmentMessages.TodoTask` struct from the extra library to encode your messages.
-* `finished-task` => use the `AssignmentMessages.TaskResponse` struct
-* `todo-chunk` => use the `AssignmentMessages.TodoChunk` struct
+* `todo-tasks` => use the `AssignmentMessages.TodoTask` struct from the extra library to encode your messages.
+* `finished-tasks` => use the `AssignmentMessages.TaskResponse` struct
+* `todo-chunks` => use the `AssignmentMessages.TodoChunk` struct
 * `finished-chunks` => use the `AssignmentMessages.ClonedChunk` struct
 
 ## Libraries and usage for this application
@@ -58,6 +56,8 @@ This application will __only__ perform queries on the `TaskStatus`, `TaskRemaini
 
 ## Tips
 
+__TODO__: verify, look at all the files (ctrl + f all external functions) and write them down here.
+
 * `DatabaseInteraction.CurrencyPairContext.get_pair_by_name/1`
 * `DatabaseInteraction.TaskRemainingChunkContext.get_chunk_by/3`
 * `DatabaseInteraction.TaskRemainingChunkContext.changeset_mark_as_done/1`
@@ -66,3 +66,7 @@ This application will __only__ perform queries on the `TaskStatus`, `TaskRemaini
 * `AssignmentMessages.TaskResponse` struct
 * `AssignmentMessages.TodoChunk` struct
 * `AssignmentMessages.encode_message/1`
+
+## Naming conventions and sample code
+
+__TODO__: ...

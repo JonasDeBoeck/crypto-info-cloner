@@ -61,4 +61,4 @@ Both libraries restrict you to store and pass the data along in a specific forma
 
 ## Constraints
 
-We provide a [script](project_test.sh) to see whether you are conform to the project naming convections. Every small sub application will have its own naming conventions. Adhere to these or our tests will fail automatically! Same goes for the topic names, topic partitions, application names, and so on.
+We provide a [script](../project_test.sh) to see whether you are conform to the project naming convections. Every small sub application will have its own naming conventions. Adhere to these or our tests will fail automatically! Same goes for the topic names, topic partitions, application names, and so on.

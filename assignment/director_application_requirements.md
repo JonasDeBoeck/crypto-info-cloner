@@ -70,9 +70,70 @@ This application will __only__ perform queries on the `CurrencyPair` table and r
 
 ## Tips
 
+__TODO__: verify, look at all the files (ctrl + f all external functions) and write them down here.
+
 * `DatabaseInteraction.CurrencyPairContext.get_pair_by_name/1`
 * `DatabaseInteraction.CurrencyPairContext.create_currency_pair/1`
 * `DatabaseInteraction.CurrencyPairChunkContext.generate_missing_chunks/3`
 * `AssignmentMessages.TodoTask` struct
 * `AssignmentMessages.TaskResponse` struct
 * `AssignmentMessages.encode_message/1`
+
+## Naming conventions and sample code
+
+__You have to adhere to these naming conventions!__ If not, tests will fail and points will be subtracted from your end score.
+
+Config:
+
+```elixir
+config :director,
+  pairs_to_clone: ["BTC_ETH", "USDT_BTC", "USDC_BTC"],
+  from: 1_590_969_600,
+  until: 1_591_500_000
+```
+
+### Kafka contexts
+
+In order to guide you a bit (and make our testing process easier), we'll ask you to make these "KafkaContexts". These files their purpose is to abstract away the Kafka logic in one module.
+
+We expect the following functions and their return values for `Director.TodoTasksKafkaContext`:
+
+```elixir
+# hint: the input of this function is suspiciously similar than the output of CurrencyPairChunkContext.generate_missing_chunks/3
+iex> Director.TodoTasksKafkaContext.create_kafka_messages([{from_t1, until_t2}, {from_t3, until_t4}], "BTC_ETH")
+[%KafkaEx.Protocol.Produce.Message{}, %KafkaEx.Protocol.Produce.Message{}, ...]
+# List of produce messages.
+iex> Director.TodoTasksKafkaContext.create_kafka_message({from_t1, from_t2}, "BTC_ETH")
+%KafkaEx.Protocol.Produce.Message{}
+# Single produce message
+iex> Director.TodoTasksKafkaContext.produce_to_topic(%KafkaEx.Protocol.Produce.Message{ ... })
+# Output the same as KafkaEx.produce
+iex> Director.TodoTasksKafkaContext.produce_to_topic([%KafkaEx.Protocol.Produce.Message{ ... }, ...])
+# Output the same as KafkaEx.produce
+```
+
+There's also the more general `Director.TopicsKafkaContext`:
+
+```elixir
+iex> Director.TopicsContext.create_topics
+# self-explanatory. Creates topics with at least 2 paritions
+iex> Director.TopicsContext.delete_topics
+# self-explanatory.
+```
+
+### Application "interface"
+
+You'll interface with your application only through one module:
+
+```elixir
+iex> Director.create_topics()
+iex> Director.delete_topics()
+iex> Director.create_task(unix_from, unix_until, "BTC_ETH")
+# TODO: verify output
+iex> Director.automatic_create_tasks
+# TODO: verify output
+```
+
+### Consumer
+
+The module name is `Director.FinishedTaskConsumer`. You don't need to implement certain functions, except the necessary consumer callback `handle_message_set`.

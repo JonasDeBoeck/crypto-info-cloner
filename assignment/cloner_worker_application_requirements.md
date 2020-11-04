@@ -1,6 +1,6 @@
 # Worker application
 
-This application is responsible for fetching the required information from the public API (=https://poloniex.com/public). This application consist of a structure of different modules that guarantee the creation and the uptime of the workers, the rate in which data is fetched and a manager.
+This application is responsible for fetching the required information from the public API (= [https://poloniex.com/public](https://poloniex.com/public)). This application consist of a structure of different modules that guarantee the creation and the uptime of the workers, the rate in which data is fetched and a manager.
 
 ## Goal
 
@@ -13,7 +13,7 @@ This application is responsible for fetching the required information from the p
 
 ## Data flow
 
-The __chunk consumer__ will start with consuming the message from the `todo-chunk` topic. It will decode the message and give the task to the __manager__, who will put this task on the __queue__. The __manager__ will periodically pull an task from the __queue__ and give it to an available worker. When a worker receives a task it will register with the rate limiter that he is waiting for permission to start his task. When he gets this permission he checks whether the window size is not to big and fetches the data from the public API. When the window size is to big, the worker will create an `AssignmentMessages.ClonedChunk` struct with `:WINDOW_TOO_BIG`. If the data fetch is succesful, the worker will put the data in a `AssignmentMessages.ClonedChunk` struct and send it back to the __manager__. If the fetch is not succesful, you need to log an error. 
+The __chunk consumer__ will start with consuming the message from the `todo-chunk` topic. It will decode the message and give the task to the __manager__, who will put this task on the __queue__. The __manager__ will periodically pull an task from the __queue__ and give it to an available worker. When a worker receives a task it will register with the rate limiter that he is waiting for permission to start his task. When he gets this permission he checks whether the window size is not to big and fetches the data from the public API. When the window size is to big, the worker will create an `AssignmentMessages.ClonedChunk` struct with `:WINDOW_TOO_BIG`. If the data fetch is succesful, the worker will put the data in a `AssignmentMessages.ClonedChunk` struct and send it back to the __manager__. If the fetch is not succesful, you need to log an error.
 
 ## Libraries and usage for this application
 
@@ -53,5 +53,5 @@ This application will not interact with the database. We expect you to create a 
 
 * `AssignmentMessages.TodoChunk` struct
 * `AssignmentMessages.ClonedChunk` struct
-* `AssignmentMessages.ClonedEntry` struct 
+* `AssignmentMessages.ClonedEntry` struct
 * AssignmentMessages.encode_message/1
