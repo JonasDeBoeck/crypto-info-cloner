@@ -4,6 +4,8 @@ This application is responsible for fetching the required information from the p
 
 ## Goal
 
+This application consists of following modules:
+
 * The __chunk consumer__ will need to fetch the message from the `todo-chunk` topic, start the fetching process with the information in this message and send the result to the kafka on the `finished-chunk`.
 * The __rate limiter__ will control the amount of fetch request that will be send to the public API by selecting the workers that get permission to start their fetch proces.
 * The __dynamic supervisor__ maintain and create workers in the worker pool.
@@ -17,12 +19,11 @@ The __chunk consumer__ will start with consuming the message from the `todo-chun
 
 ## Libraries and usage for this application
 
-We provide 2 libraries for you:
+We provide 1 libraries for you:
 
 * [Messages library](https://github.com/distributed-applications-2021/assignment-messages). This will describe how the data in the messages should be put on your Kafka topics.
-* [Database interaction library](https://github.com/distributed-applications-2021/assignment-database-interaction). This will abstract away how you'll have to interact with the database.
 
-Look at the readme / API overview how to use these.
+Look at the readme / API overview how to use it.
 
 ## Constraints
 
@@ -32,18 +33,18 @@ Look at the readme / API overview how to use these.
 
 ### API & functionality constraints
 
-Here are some hints on what methods you can expect in the different modules:
+Create the following functions:
 
-* Workerpool.Worker.clone_chunk
-* Workerpool.Queue.add_to_queue
-* Workerpool.Queue.get_first_element
-* Workerpool.WorkerManager.add_task
-* Workerpool.RateLimiter.register
-* Workerpool.RateLimiter.set_rate
+* `Workerpool.Worker.clone_chunk`
+* `Workerpool.Queue.add_to_queue`
+* `Workerpool.Queue.get_first_element`
+* `Workerpool.WorkerManager.add_task`
+* `Workerpool.RateLimiter.register`
+* `Workerpool.RateLimiter.set_rate`
 
 ### Config constraints
 
-/
+Use a config file to configure the amount of workers and the rate limit: `n_workers`, `default_rate`
 
 ### Design constraints
 
@@ -55,3 +56,20 @@ This application will not interact with the database. We expect you to create a 
 * `AssignmentMessages.ClonedChunk` struct
 * `AssignmentMessages.ClonedEntry` struct
 * AssignmentMessages.encode_message/1
+
+## Naming conventions and sample code
+
+__You have to adhere to these naming conventions!__ If not, tests will fail and points will be subtracted from your end score.
+
+Config:
+
+```elixir
+config :worker_queue_temp,
+  n_workers: 4,
+  default_rate: 2
+```
+
+### Consumer
+
+In this application we will make use of the `WorkerQueueTemp.TodoChunkConsumer` module for our consumer.
+

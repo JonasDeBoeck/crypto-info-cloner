@@ -40,11 +40,18 @@ Look at the readme / API overview how to use these.
 
 ### Kafka constraints
 
-Every topic should at least have 2 partitions.
+When there is an error while creating tasks, it suffices to just print a Logger message. E.g. "there has been a task conflict for the task ...". 
+
+Also notice that this application supervises two consumer groups for both the `todo-tasks` and `finished-chunks`.
 
 ### API & functionality constraints
 
-Since there is no direct communication with the chunk creator, all communication goes through kafka, there is no need for an API.
+Create the following functions:
+
+* `ChunkTaskCreator.CompletedChunksConsumer.process_message(clonedChunk)`
+* `ChunkTaskCreator.repush_todo_chunks_on_topic()`
+* `ChunkTaskCreator.TodoChunksKafkaContext.task_remaining_chunk_to_produce_message(taskRemainingChunk, currency_pair)` => produces kafka message with TodoChunks from a pair and TaskRemainingChunk
+* `ChunkTaskCreator.TodoChunksKafkaContext.produce_message(message)`
 
 ### Config constraints
 
@@ -56,17 +63,44 @@ This application will __only__ perform queries on the `TaskStatus`, `TaskRemaini
 
 ## Tips
 
-__TODO__: verify, look at all the files (ctrl + f all external functions) and write them down here.
-
 * `DatabaseInteraction.CurrencyPairContext.get_pair_by_name/1`
+* `DatabaseInteraction.CurrencyPairChunkContext.create_chunk/3`
 * `DatabaseInteraction.TaskRemainingChunkContext.get_chunk_by/3`
 * `DatabaseInteraction.TaskRemainingChunkContext.changeset_mark_as_done/1`
 * `DatabaseInteraction.TaskRemainingChunkContext.halve_chunk/3`
+* `DatabaseInteraction.TaskRemainingChunk` struct
 * `AssignmentMessages.TodoTask` struct
 * `AssignmentMessages.TaskResponse` struct
 * `AssignmentMessages.TodoChunk` struct
+* `AssignmentMessages.ClonedEntry` struct
 * `AssignmentMessages.encode_message/1`
 
 ## Naming conventions and sample code
 
-__TODO__: ...
+__You have to adhere to these naming conventions!__ If not, tests will fail and points will be subtracted from your end score.
+
+Config:
+
+```elixir
+config :chunk_task_creator,
+  max_window_size_in_sec: 1 * 1 * 60 * 60
+```
+
+### Kafka contexts
+
+We expect the following functions and their return values for `ChunkTaskCreator.TodoChunksKafkaContext`:
+
+```elixir
+TODO
+```
+
+We expect the following functions and their return values for `ChunkTaskCreator.FinishedTasksKafkaContext`:
+
+```elixir
+TODO
+```
+
+### Consumer
+
+Since we have two consumer groups we will need two modules. In this application we will make use of `TodoTaskConsumer` and the `CompletedChunksConsumer`.
+

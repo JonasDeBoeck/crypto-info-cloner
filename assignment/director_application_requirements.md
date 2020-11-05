@@ -70,8 +70,6 @@ This application will __only__ perform queries on the `CurrencyPair` table and r
 
 ## Tips
 
-__TODO__: verify, look at all the files (ctrl + f all external functions) and write them down here.
-
 * `DatabaseInteraction.CurrencyPairContext.get_pair_by_name/1`
 * `DatabaseInteraction.CurrencyPairContext.create_currency_pair/1`
 * `DatabaseInteraction.CurrencyPairChunkContext.generate_missing_chunks/3`
@@ -129,9 +127,9 @@ You'll interface with your application only through one module:
 iex> Director.create_topics()
 iex> Director.delete_topics()
 iex> Director.create_task(unix_from, unix_until, "BTC_ETH")
-# TODO: verify output
+#Output: {:ok, 0}
 iex> Director.automatic_create_tasks
-# TODO: verify output
+#Output: [ok: 1, ok: 2, ok: 0]
 ```
 
 ### Consumer
