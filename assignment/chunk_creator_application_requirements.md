@@ -40,18 +40,16 @@ Look at the readme / API overview how to use these.
 
 ### Kafka constraints
 
-When there is an error while creating tasks, it suffices to just print a Logger message. E.g. "there has been a task conflict for the task ...". 
-
-Also notice that this application supervises two consumer groups for both the `todo-tasks` and `finished-chunks`.
+This application supervises two consumer groups for both the `todo-tasks` and `finished-chunks`. Keep in mind that you'll most likely have to manually allocate a different id in the child_spec.
 
 ### API & functionality constraints
 
 Create the following functions:
 
-* `ChunkTaskCreator.CompletedChunksConsumer.process_message(clonedChunk)`
-* `ChunkTaskCreator.repush_todo_chunks_on_topic()`
-* `ChunkTaskCreator.TodoChunksKafkaContext.task_remaining_chunk_to_produce_message(taskRemainingChunk, currency_pair)` => produces kafka message with TodoChunks from a pair and TaskRemainingChunk
-* `ChunkTaskCreator.TodoChunksKafkaContext.produce_message(message)`
+* `ChunkCreator.FinishedTasksKafkaContext. ... TODO`
+* `ChunkCreator.FinishedTasksKafkaContext. ... TODO`
+* `ChunkCreator.TodoChunksKafkaContext.task_remaining_chunk_to_produce_message(taskRemainingChunk, currency_pair)` => produces kafka message with TodoChunks from a pair and TaskRemainingChunk
+* `ChunkCreator.TodoChunksKafkaContext.produce_message(message)`
 
 ### Config constraints
 
@@ -103,4 +101,3 @@ TODO
 ### Consumer
 
 Since we have two consumer groups we will need two modules. In this application we will make use of `TodoTaskConsumer` and the `CompletedChunksConsumer`.
-

@@ -62,3 +62,23 @@ Both libraries restrict you to store and pass the data along in a specific forma
 ## Constraints
 
 We provide a [script](../project_test.sh) to see whether you are conform to the project naming convections. Every small sub application will have its own naming conventions. Adhere to these or our tests will fail automatically! Same goes for the topic names, topic partitions, application names, and so on.
+
+### Project names
+
+The project names:
+
+* `Director`
+* `ChunkCreator`
+* `ClonerWorker`
+<!-- * `ClonerRateLimiter` -->
+
+### Kafka topic names
+
+These are the topic names __which each have at least 2 partitions__:
+
+* `todo-tasks`
+* `finished-tasks`
+* `todo-chunks`
+* `finished-chunks`
+
+We'll refer to this topics in te application descriptions, but chances are we make a typo. To avoid confusion, the above names are the correct ones.

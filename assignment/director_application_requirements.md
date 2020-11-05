@@ -127,9 +127,10 @@ You'll interface with your application only through one module:
 iex> Director.create_topics()
 iex> Director.delete_topics()
 iex> Director.create_task(unix_from, unix_until, "BTC_ETH")
-#Output: {:ok, 0}
+# Output: {:ok, 0}
+#   Integer is the offset of the produced message
 iex> Director.automatic_create_tasks
-#Output: [ok: 1, ok: 2, ok: 0]
+# Output: [ok: 1, ok: 2, ok: 3]
 ```
 
 ### Consumer

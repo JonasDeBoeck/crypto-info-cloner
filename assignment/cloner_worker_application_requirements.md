@@ -29,18 +29,27 @@ Look at the readme / API overview how to use it.
 
 ### Kafka constraints
 
-/
+None, you're just consuming a topic and producing on an existing topic.
 
 ### API & functionality constraints
 
 Create the following functions:
 
-* `Workerpool.Worker.clone_chunk`
-* `Workerpool.Queue.add_to_queue`
-* `Workerpool.Queue.get_first_element`
-* `Workerpool.WorkerManager.add_task`
-* `Workerpool.RateLimiter.register`
-* `Workerpool.RateLimiter.set_rate`
+* `ClonerWorker.Queue.add_to_queue`
+* `ClonerWorker.Queue.get_first_element`
+* `ClonerWorker.WorkerManager.add_task`
+* `ClonerWorker.RateLimiter.register`
+* `ClonerWorker.RateLimiter.set_rate`
+
+Following processes (not necessarily modules!) are expected to be alive when your application starts:
+
+* `ClonerWorker.MyRegistry`
+* `ClonerWorker.WorkerDynamicSupervisor`
+* n `ClonerWorker.Worker` processes depending on your config. You don't need to be able to change the amount of workers at runtime.
+  * Registers itself in the registry as {:worker, n} where n is a number.
+* `ClonerWorker.Queue`
+* `ClonerWorker.WorkerManager`
+* `ClonerWorker.RateLimiter`
 
 ### Config constraints
 
@@ -64,12 +73,24 @@ __You have to adhere to these naming conventions!__ If not, tests will fail and 
 Config:
 
 ```elixir
-config :worker_queue_temp,
+config :my_app,
   n_workers: 4,
   default_rate: 2
 ```
 
+```elixir
+iex> ClonerWorker.Queue.add_to_queue
+TODO
+iex> ClonerWorker.Queue.get_first_element
+TODO
+iex> ClonerWorker.WorkerManager.add_task
+TODO
+iex> ClonerWorker.RateLimiter.register
+TODO
+iex> ClonerWorker.RateLimiter.set_rate
+TODO
+```
+
 ### Consumer
 
-In this application we will make use of the `WorkerQueueTemp.TodoChunkConsumer` module for our consumer.
-
+In this application we will make use of the `ClonerWorker.TodoChunkConsumer` module for our consumer.
