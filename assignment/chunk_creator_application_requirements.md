@@ -80,27 +80,27 @@ __You have to adhere to these naming conventions!__ If not, tests will fail and 
 Config:
 
 ```elixir
-config :chunk_task_creator,
+config :chunk_creator,
   max_window_size_in_sec: 1 * 1 * 60 * 60
 ```
 
 ### Kafka contexts
 
-We expect the following functions and their return values for `ChunkTaskCreator.TodoChunksKafkaContext`:
+We expect the following functions and their return values for `ChunkCreator.TodoChunksKafkaContext`:
 
 ```elixir
-iex> ChunkTaskCreator.FinishedTasksKafkaContext.create_task_response_produce_message(uuid, result)
-%KafkaEx.Protocol.Produce.Message{key: nil, timestamp: nil, value: <<18, 36, 51, 49, 98, 100, 100, 50, 54, 51, 45, 54, 99, 49, 97, 45, 52, 51, 102, 51, 45, 57, 51, 48, 52, 45, 49, 57, 52, 50, 101, 56, 48, 49, 51, 100, 51, 101>>}
-iex> ChunkTaskCreator.FinishedTasksKafkaContext.produce_message(msges)
+iex> ChunkCreator.FinishedTasksKafkaContext.create_task_response_produce_message(uuid, result)
+%KafkaEx.Protocol.Produce.Message{key: nil, timestamp: nil, value: <<18, 36, ...>>}
+iex> ChunkCreator.FinishedTasksKafkaContext.produce_message(msges)
 {:ok, offset}
 ```
 
-We expect the following functions and their return values for `ChunkTaskCreator.FinishedTasksKafkaContext`:
+We expect the following functions and their return values for `ChunkCreator.FinishedTasksKafkaContext`:
 
 ```elixir
-iex > ChunkTaskCreator.TodoChunksKafkaContext.task_remaining_chunk_to_produce_message(chunk, pair)
-%KafkaEx.Protocol.Produce.Message{key: nil, timestamp: nil, value: <<10, 8, 85, 83, 68, 67, 95, 66, 84, 67, 16, 176, 222, 209, 246, 5, 24, 191, 250, 209, 246, 5, 32, 3>>}
-iex> ChunkTaskCreator.TodoChunksKafkaContext.produce_message(msges)
+iex > ChunkCreator.TodoChunksKafkaContext.task_remaining_chunk_to_produce_message(chunk, pair)
+%KafkaEx.Protocol.Produce.Message{key: nil, timestamp: nil, value: <<10, 8, ...>>}
+iex> ChunkCreator.TodoChunksKafkaContext.produce_message(msges)
 {:ok, offset}
 
 ```

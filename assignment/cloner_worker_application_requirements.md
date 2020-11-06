@@ -84,7 +84,7 @@ iex> ClonerWorker.Queue.add_to_queue
 iex> ClonerWorker.Queue.get_first_element
 {:ok, worker_pid}
 iex> ClonerWorker.WorkerManager.add_task
-
+TODO
 iex> ClonerWorker.RateLimiter.register
 :ok
 iex> ClonerWorker.RateLimiter.set_rate
