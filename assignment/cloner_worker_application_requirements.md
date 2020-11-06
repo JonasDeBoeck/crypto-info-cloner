@@ -80,15 +80,15 @@ config :my_app,
 
 ```elixir
 iex> ClonerWorker.Queue.add_to_queue
-TODO
+:ok
 iex> ClonerWorker.Queue.get_first_element
-TODO
+{:ok, worker_pid}
 iex> ClonerWorker.WorkerManager.add_task
-TODO
+
 iex> ClonerWorker.RateLimiter.register
-TODO
+:ok
 iex> ClonerWorker.RateLimiter.set_rate
-TODO
+:ok
 ```
 
 ### Consumer
