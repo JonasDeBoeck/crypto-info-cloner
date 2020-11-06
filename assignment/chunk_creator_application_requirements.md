@@ -46,7 +46,7 @@ This application supervises two consumer groups for both the `todo-tasks` and `f
 
 Create the following functions:
 
-* `ChunkCreator.FinishedTasksKafkaContext.create_task_response_produce_message(uuid, result)` 
+* `ChunkCreator.FinishedTasksKafkaContext.create_task_response_produce_message(uuid, result)`
 * `ChunkCreator.FinishedTasksKafkaContext.produce_message(messages)`
 * `ChunkCreator.TodoChunksKafkaContext.task_remaining_chunk_to_produce_message(taskRemainingChunk, currency_pair)` => produces kafka message with TodoChunks from a pair and TaskRemainingChunk
 * `ChunkCreator.TodoChunksKafkaContext.produce_message(message)`
