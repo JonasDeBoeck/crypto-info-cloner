@@ -17,12 +17,12 @@ When a message arrives on the `todo-tasks`, it'll be responsible for:
 
 It will also consume the `finished-chunks` topic. It'll have to do the following when a chunk its result is posted:
 
- 1. Check the `chunk_result`. If it is `WINDOW_TOO_BIG`, update your database that 2 smaller chunks need to be cloned. Also put these chunks again on the `todo-chunks` topic.
+ 1. Check the `chunk_result`. If it is `:WINDOW_TOO_BIG`, update your database that 2 smaller chunks need to be cloned. Also put these chunks again on the `todo-chunks` topic.
  2. If the result is good, update your database (and check if your task is complete). If your task is complete, put it on the `finished-tasks` topic with the `:COMPLETE` status.
 
 The chunk creator will use following topics:
 
-* `todo-tasks` => use the `AssignmentMessages.TodoTask` struct from the extra library to encode your messages.
+* `todo-tasks` => use the `AssignmentMessages.TodoTask` struct from the extra library to decode your messages.
 * `finished-tasks` => use the `AssignmentMessages.TaskResponse` struct
 * `todo-chunks` => use the `AssignmentMessages.TodoChunk` struct
 * `finished-chunks` => use the `AssignmentMessages.ClonedChunk` struct
