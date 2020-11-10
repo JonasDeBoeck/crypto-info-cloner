@@ -25,7 +25,7 @@ __You could submit the task on the kafka topic, but the chunk creator applicatio
 As mentioned previously, the director application will use the following topics:
 
 * `todo-tasks` => use the `AssignmentMessages.TodoTask` struct from the extra library to encode your messages.
-* `finished-tasks` => use the `AssignmentMessages.TaskResponse` struct from the extra library to encode your messages.
+* `finished-tasks` => use the `AssignmentMessages.TaskResponse` struct from the extra library to decode your messages.
 
 The topic names are self-explanatory. You can look at [the proto schema](https://github.com/distributed-applications-2021/assignment-messages/blob/main/protobuf_schemas.proto) to see what the accepted values (atoms, e.g. `:ADD, :DELETE, :COMPLETE, :TASK_CONFLICT`) are for the enums.
 
@@ -44,7 +44,7 @@ Look at the readme / API overview how to use these.
 
 Every topic should at least have 2 partitions.
 
-When a task is completed, it suffices to just print a `Logger` message. E.g. "there has been a task conflict for the task ..." or "The following task has been completed: ...".
+When a task is completed, it suffices to just print a `Logger` message. E.g. "There has been a task conflict for the task ..." or "The following task has been completed: ...".
 
 ### API & functionality constraints
 
@@ -101,7 +101,7 @@ We expect the following functions and their return values for `Director.TodoTask
 iex> Director.TodoTasksKafkaContext.create_kafka_messages([{from_t1, until_t2}, {from_t3, until_t4}], "BTC_ETH")
 [%KafkaEx.Protocol.Produce.Message{}, %KafkaEx.Protocol.Produce.Message{}, ...]
 # List of produce messages.
-iex> Director.TodoTasksKafkaContext.create_kafka_message({from_t1, from_t2}, "BTC_ETH")
+iex> Director.TodoTasksKafkaContext.create_kafka_message({from_t1, until_t2}, "BTC_ETH")
 %KafkaEx.Protocol.Produce.Message{}
 # Single produce message
 iex> Director.TodoTasksKafkaContext.produce_to_topic(%KafkaEx.Protocol.Produce.Message{ ... })
@@ -114,7 +114,7 @@ There's also the more general `Director.TopicsKafkaContext`:
 
 ```elixir
 iex> Director.TopicsContext.create_topics
-# self-explanatory. Creates topics with at least 2 paritions
+# self-explanatory. Creates topics with at least 2 partitions per topic
 iex> Director.TopicsContext.delete_topics
 # self-explanatory.
 ```
