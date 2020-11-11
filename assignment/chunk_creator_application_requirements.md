@@ -89,20 +89,19 @@ config :chunk_creator,
 We expect the following functions and their return values for `ChunkCreator.TodoChunksKafkaContext`:
 
 ```elixir
-iex> ChunkCreator.FinishedTasksKafkaContext.create_task_response_produce_message(uuid, result)
-%KafkaEx.Protocol.Produce.Message{key: nil, timestamp: nil, value: <<18, 36, ...>>}
-iex> ChunkCreator.FinishedTasksKafkaContext.produce_message(msges)
+iex > ChunkCreator.TodoChunksKafkaContext.task_remaining_chunk_to_produce_message(chunk, pair)
+%KafkaEx.Protocol.Produce.Message{key: nil, timestamp: nil, value: <<10, 8, ...>>}
+iex> ChunkCreator.TodoChunksKafkaContext.produce_message(msges)
 {:ok, offset}
 ```
 
 We expect the following functions and their return values for `ChunkCreator.FinishedTasksKafkaContext`:
 
 ```elixir
-iex > ChunkCreator.TodoChunksKafkaContext.task_remaining_chunk_to_produce_message(chunk, pair)
-%KafkaEx.Protocol.Produce.Message{key: nil, timestamp: nil, value: <<10, 8, ...>>}
-iex> ChunkCreator.TodoChunksKafkaContext.produce_message(msges)
+iex> ChunkCreator.FinishedTasksKafkaContext.create_task_response_produce_message(uuid, result)
+%KafkaEx.Protocol.Produce.Message{key: nil, timestamp: nil, value: <<18, 36, ...>>}
+iex> ChunkCreator.FinishedTasksKafkaContext.produce_message(msges)
 {:ok, offset}
-
 ```
 
 ### Consumer
