@@ -52,7 +52,7 @@ Create the following functions:
 
 * `Director.create_topics/0`
 * `Director.delete_topics/0`
-* `Director.create_tasks/0` => this will use the config
+* `Director.automatic_create_tasks/0` => this will use the config
 
 ### Config constraints
 
@@ -62,7 +62,7 @@ You will use the following config keys:
 * `:from` => a time in __unix timestamp format__ (seconds, not milliseconds)
 * `:until` => a time in __unix timestamp format__ (seconds, not milliseconds)
 
-These values are used by `Director.create_tasks/0`.
+These values are used by `Director.automatic_create_tasks/0`.
 
 ### Design constraints
 
