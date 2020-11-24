@@ -17,12 +17,12 @@ When a message arrives on the `todo-tasks`, it'll be responsible for:
 
 It will also consume the `finished-chunks` topic. It'll have to do the following when a chunk its result is posted:
 
- 1. Check the `chunk_result`. If it is `WINDOW_TOO_BIG`, update your database that 2 smaller chunks need to be cloned. Also put these chunks again on the `todo-chunks` topic.
+ 1. Check the `chunk_result`. If it is `:WINDOW_TOO_BIG`, update your database that 2 smaller chunks need to be cloned. Also put these chunks again on the `todo-chunks` topic.
  2. If the result is good, update your database (and check if your task is complete). If your task is complete, put it on the `finished-tasks` topic with the `:COMPLETE` status.
 
 The chunk creator will use following topics:
 
-* `todo-tasks` => use the `AssignmentMessages.TodoTask` struct from the extra library to encode your messages.
+* `todo-tasks` => use the `AssignmentMessages.TodoTask` struct from the extra library to decode your messages.
 * `finished-tasks` => use the `AssignmentMessages.TaskResponse` struct
 * `todo-chunks` => use the `AssignmentMessages.TodoChunk` struct
 * `finished-chunks` => use the `AssignmentMessages.ClonedChunk` struct
@@ -89,20 +89,19 @@ config :chunk_creator,
 We expect the following functions and their return values for `ChunkCreator.TodoChunksKafkaContext`:
 
 ```elixir
-iex> ChunkCreator.FinishedTasksKafkaContext.create_task_response_produce_message(uuid, result)
-%KafkaEx.Protocol.Produce.Message{key: nil, timestamp: nil, value: <<18, 36, ...>>}
-iex> ChunkCreator.FinishedTasksKafkaContext.produce_message(msges)
+iex > ChunkCreator.TodoChunksKafkaContext.task_remaining_chunk_to_produce_message(chunk, pair)
+%KafkaEx.Protocol.Produce.Message{key: nil, timestamp: nil, value: <<10, 8, ...>>}
+iex> ChunkCreator.TodoChunksKafkaContext.produce_message(msges)
 {:ok, offset}
 ```
 
 We expect the following functions and their return values for `ChunkCreator.FinishedTasksKafkaContext`:
 
 ```elixir
-iex > ChunkCreator.TodoChunksKafkaContext.task_remaining_chunk_to_produce_message(chunk, pair)
-%KafkaEx.Protocol.Produce.Message{key: nil, timestamp: nil, value: <<10, 8, ...>>}
-iex> ChunkCreator.TodoChunksKafkaContext.produce_message(msges)
+iex> ChunkCreator.FinishedTasksKafkaContext.create_task_response_produce_message(uuid, result)
+%KafkaEx.Protocol.Produce.Message{key: nil, timestamp: nil, value: <<18, 36, ...>>}
+iex> ChunkCreator.FinishedTasksKafkaContext.produce_message(msges)
 {:ok, offset}
-
 ```
 
 ### Consumer
