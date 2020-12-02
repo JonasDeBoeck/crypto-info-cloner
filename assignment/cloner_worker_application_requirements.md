@@ -73,7 +73,7 @@ __You have to adhere to these naming conventions!__ If not, tests will fail and 
 Config:
 
 ```elixir
-config :my_app,
+config :cloner_worker,
   n_workers: 4,
   default_rate: 2
 ```
