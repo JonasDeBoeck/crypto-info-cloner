@@ -82,7 +82,7 @@ config :my_app,
 iex> ClonerWorker.Queue.add_to_queue
 :ok
 iex> ClonerWorker.Queue.get_first_element
-{:ok, worker_pid}
+{:ok, first_element_from_queue}
 iex> ClonerWorker.WorkerManager.add_task
 TODO
 iex> ClonerWorker.RateLimiter.register
