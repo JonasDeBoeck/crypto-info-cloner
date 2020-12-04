@@ -1,5 +1,8 @@
 import Config
 
+config :kafka_ex,
+  brokers: [{"localhost", 9092}]
+
 config :director,
   ecto_repos: [Director.Repo]
 
