@@ -12,6 +12,7 @@ defmodule ChunkCreator.Application do
     todo_consumer = ChunkCreator.TodoTaskConsumer
     topic_names = ["todo-tasks"]
     children = [
+      {ChunkCreator.Repo, []},
       supervisor(
         KafkaEx.ConsumerGroup,
         [todo_consumer, "todo-tasks-consumer-group", topic_names, consumer_group_opts]
