@@ -4,12 +4,21 @@ defmodule ClonerWorker.Application do
   @moduledoc false
 
   use Application
+  import Supervisor.Spec
 
   @impl true
   def start(_type, _args) do
+    consumer_group_opts = []
+    todo_consumer = ClonerWorker.TodoChunkConsumer
+    topic_names = ["todo-chunks"]
     children = [
-      # Starts a worker by calling: ClonerWorker.Worker.start_link(arg)
-      # {ClonerWorker.Worker, arg}
+      {ClonerWorker.WorkerManager, []},
+      {ClonerWorker.Queue, []},
+      {Task, &ClonerWorker.WorkerDynamicSupervisor.start_workers/0},
+      supervisor(
+        KafkaEx.ConsumerGroup,
+        [todo_consumer, "todo-chunks-consumer-group", topic_names, consumer_group_opts]
+      )
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
