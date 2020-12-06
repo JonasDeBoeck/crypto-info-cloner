@@ -73,7 +73,7 @@ __You have to adhere to these naming conventions!__ If not, tests will fail and 
 Config:
 
 ```elixir
-config :my_app,
+config :cloner_worker,
   n_workers: 4,
   default_rate: 2
 ```
@@ -82,7 +82,7 @@ config :my_app,
 iex> ClonerWorker.Queue.add_to_queue
 :ok
 iex> ClonerWorker.Queue.get_first_element
-{:ok, worker_pid}
+{:ok, first_element_from_queue}
 iex> ClonerWorker.WorkerManager.add_task
 TODO
 iex> ClonerWorker.RateLimiter.register
