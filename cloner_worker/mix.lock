@@ -1,0 +1,9 @@
+%{
+  "assignment_messages": {:git, "https://github.com/distributed-applications-2021/assignment-messages", "4b66e589e0c5d39a570058a5a2a306141fa62ccd", [branch: "main"]},
+  "connection": {:hex, :connection, "1.0.4", "a1cae72211f0eef17705aaededacac3eb30e6625b04a6117c1b2db6ace7d5976", [:mix], [], "hexpm", "4a0850c9be22a43af9920a71ab17c051f5f7d45c209e40269a1938832510e4d9"},
+  "crc32cer": {:hex, :crc32cer, "0.1.10", "fb87abbf34b72f180f8c3a908cd1826c6cb9a59787d156a29e05de9e98be385e", [:rebar3], [], "hexpm", "5b1f47efd0a1b4b7411f1f35e14d3c8c6da6e6a2a725ec8f2cf1ab13703e5f38"},
+  "kafka_ex": {:hex, :kafka_ex, "0.11.0", "20c1e6feac49e84b794d7c0d4c33b26910d91eafa00c4eb53515eb650c438c02", [:mix], [{:kayrock, "~> 0.1.9", [hex: :kayrock, repo: "hexpm", optional: false]}], "hexpm", "a26ff1ba8addf12aa1f08a62121127e6ec9fc0885622a70523885b83a06cc94a"},
+  "kayrock": {:hex, :kayrock, "0.1.12", "6c7d840808bf771cd2cd5b650e583aaa7c13309a79008295da0f98a2de7d2fb3", [:mix], [{:connection, "~>1.0.4", [hex: :connection, repo: "hexpm", optional: false]}, {:crc32cer, "~>0.1.3", [hex: :crc32cer, repo: "hexpm", optional: false]}, {:varint, "~>1.2.0", [hex: :varint, repo: "hexpm", optional: false]}], "hexpm", "5693d225deeea6448d0e84dcf4b1ecd99bad8426e88144c649be6bf8cc0c830a"},
+  "protox": {:hex, :protox, "1.1.1", "0134aa8dd5c29dd2a27dde518aff8e92f4c8730b3c272ec6b16df9113bbd3ef7", [:mix], [], "hexpm", "e583a0a66f9d7fa1afb09a2d976d09d61f9c25ed1f3fb3f2faff7dd4d70fa7c9"},
+  "varint": {:hex, :varint, "1.2.0", "61bffd9dcc2d5242d59f75694506b4d4013bb103f6a23e34b94f89cebb0c1ab3", [:mix], [], "hexpm", "d94941ed8b9d1a5fdede9103a5e52035bd0aaf35081d44e67713a36799927e47"},
+}
