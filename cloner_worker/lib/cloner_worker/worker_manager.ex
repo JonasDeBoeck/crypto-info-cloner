@@ -1,4 +1,5 @@
 defmodule ClonerWorker.WorkerManager do
+  require Logger
   use GenServer
   @me __MODULE__
   defstruct workers: []
@@ -8,7 +9,27 @@ defmodule ClonerWorker.WorkerManager do
   end
 
   def init(_args) do
+    :timer.send_interval(1000, :assign_work)
     {:ok, %@me{}}
+  end
+
+  def handle_info(:assign_work, %@me{} = state) do
+    first_available_worker_index = Enum.find_index(state.workers, fn worker -> worker.available == true end)
+    if (first_available_worker_index != nil) do
+      first_available_worker = Enum.at(state.workers, first_available_worker_index)
+      task = ClonerWorker.Queue.get_first_element
+      if (task != nil) do
+        GenServer.cast(first_available_worker.pid, {:add_task, task})
+        updated_workers = List.replace_at(state.workers, first_available_worker_index, %{pid: first_available_worker.pid, available: false})
+        {:noreply, %@me{workers: updated_workers}}
+      else
+        Logger.info("There are no tasks in the queue at the moment")
+        {:noreply, %@me{workers: state.workers}}
+      end
+    else
+      Logger.info("There are no available workers at this moment")
+      {:noreply, %@me{workers: state.workers}}
+    end
   end
 
   def add_task(task) do
@@ -22,16 +43,5 @@ defmodule ClonerWorker.WorkerManager do
   def handle_cast({:add_worker, worker}, %@me{} = state) do
     new_workers = state.workers ++ [worker]
     {:noreply, %@me{workers: new_workers}}
-  end
-
-  def start_workers() do
-    amount_of_workers = Application.get_env(:cloner_worker, :n_workers)
-    Enum.each(1..amount_of_workers, fn worker ->
-      childspec = {ClonerWorker.Worker, [name: worker |> Integer.to_string |> String.to_atom]}
-      DynamicSupervisor.start_child(WorkerDynamicSupervisor, childspec)
-    end)
-    for {_, pid, _, _} <- DynamicSupervisor.which_children(WorkerDynamicSupervisor) do
-      ClonerWorker.WorkerManager.add_worker(%{pid: pid, available: true})
-    end
   end
 end

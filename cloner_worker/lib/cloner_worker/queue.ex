@@ -19,4 +19,19 @@ defmodule ClonerWorker.Queue do
     new_queue = state.tasks ++ [task]
     {:noreply, %@me{tasks: new_queue}}
   end
+
+  def get_first_element() do
+    GenServer.call(@me, :get_first)
+  end
+
+  def handle_call(:get_first, _from, state) do
+    first = List.first(state.tasks)
+    GenServer.cast(@me, :remove_first)
+    {:reply, first, state}
+  end
+
+  def handle_cast(:remove_first, %@me{} = state) do
+    new_queue = List.delete(state.tasks, 0)
+    {:noreply, %@me{tasks: new_queue}}
+  end
 end

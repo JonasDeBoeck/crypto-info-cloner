@@ -1,6 +1,7 @@
 defmodule Director do
   alias KafkaEx.Protocol.Produce.Request
   alias Director.TopicsContext
+  require Logger
 
   def create_topics() do
     TopicsContext.create_topics()
@@ -24,8 +25,16 @@ defmodule Director do
   def create_task(from, until, pair) do
     # Als de currency pair nog niet in de database bestaat, maak hem dan aan
     if (DatabaseInteraction.CurrencyPairContext.get_pair_by_name(pair) == nil) do
+      Logger.info("Currency pair #{pair} does not yet exist, creating...")
       DatabaseInteraction.CurrencyPairContext.create_currency_pair(%{currency_pair: pair})
+      Logger.info("Currency pair #{pair} created")
     end
+    # Get currency pair van database
+    currency_pair = DatabaseInteraction.CurrencyPairContext.get_pair_by_name(pair)
+    # Genereer missende chunks voor het currency pair en log dit
+    from_until = DatabaseInteraction.CurrencyPairChunkContext.generate_missing_chunks(from, until, currency_pair)
+    res = Enum.at(from_until, 0)
+    Logger.info("Generated missing chunks for currency pair: #{pair} from: #{IO.inspect(elem(res, 0))} until: #{IO.inspect(elem(res, 1))}")
     # Maak task
     todo_task = %AssignmentMessages.TodoTask{task_operation: :ADD, currency_pair: pair, from_unix_ts: from |> DateTime.to_unix, until_unix_ts: until |> DateTime.to_unix, task_uuid: Ecto.UUID.generate}
     # Encode task
