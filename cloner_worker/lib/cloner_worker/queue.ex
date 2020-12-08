@@ -31,7 +31,7 @@ defmodule ClonerWorker.Queue do
   end
 
   def handle_cast(:remove_first, %@me{} = state) do
-    new_queue = List.delete(state.tasks, 0)
+    new_queue = Enum.drop(state.tasks, 1)
     {:noreply, %@me{tasks: new_queue}}
   end
 end

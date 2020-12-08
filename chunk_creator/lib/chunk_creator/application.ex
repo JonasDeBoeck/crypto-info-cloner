@@ -10,13 +10,19 @@ defmodule ChunkCreator.Application do
   def start(_type, _args) do
     consumer_group_opts = []
     todo_consumer = ChunkCreator.TodoTaskConsumer
-    topic_names = ["todo-tasks"]
+    finished_consumer = ChunkCreator.CompletedChunkConsumer
+    todo_topic = ["todo-tasks"]
+    finished_topic = ["finished-chunks"]
     children = [
       {ChunkCreator.Repo, []},
-      supervisor(
-        KafkaEx.ConsumerGroup,
-        [todo_consumer, "todo-tasks-consumer-group", topic_names, consumer_group_opts]
-      )
+      %{
+        id: TodoTasksConsumerGroup,
+        start: {KafkaEx.ConsumerGroup, :start_link, [todo_consumer, "todo-tasks-consumer-group", todo_topic, consumer_group_opts]}
+      },
+      %{
+        id: FinishedChunksConsumerGroup,
+        start: {KafkaEx.ConsumerGroup, :start_link, [finished_consumer, "finished-chunks-consumer-group", finished_topic, consumer_group_opts]}
+      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

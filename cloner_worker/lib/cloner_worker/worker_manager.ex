@@ -44,4 +44,14 @@ defmodule ClonerWorker.WorkerManager do
     new_workers = state.workers ++ [worker]
     {:noreply, %@me{workers: new_workers}}
   end
+
+  def change_worker_status(worker_pid) do
+      GenServer.cast(@me, {:change_worker_status, worker_pid})
+  end
+
+  def handle_cast({:change_worker_status, worker_pid}, %@me{} = state) do
+    worker_index = Enum.find_index(state.workers, fn worker -> worker.pid == worker_pid end)
+    updated_workers = List.replace_at(state.workers, worker_index, %{pid: worker_pid, available: true})
+    {:noreply, %@me{workers: updated_workers}}
+  end
 end
