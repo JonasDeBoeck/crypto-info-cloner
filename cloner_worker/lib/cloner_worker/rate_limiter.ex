@@ -14,12 +14,15 @@ defmodule ClonerWorker.RateLimiter do
   end
 
   def handle_info(:make_work, %@me{} = state) do
+    # Loop van 1 - rate
     Enum.each(1..state.rate, fn x ->
       worker = Enum.at(state.workers, x - 1)
       if (worker != nil) do
+        # Laat de worker werken
         ClonerWorker.Worker.work(worker)
       end
     end)
+    # Drop het aantal workers uit de lijst gelijk aan de rate
     new_workers = Enum.drop(state.workers, state.rate)
     {:noreply, %@me{rate: state.rate, workers: new_workers}}
   end
@@ -29,6 +32,7 @@ defmodule ClonerWorker.RateLimiter do
   end
 
   def handle_cast({:register_worker, worker}, %@me{} = state) do
+    # Registreer een nieuwe worker
     new_workers = state.workers ++ [worker]
     {:noreply, %@me{rate: state.rate, workers: new_workers}}
   end
@@ -38,6 +42,7 @@ defmodule ClonerWorker.RateLimiter do
   end
 
   def handle_cast({:set_rate, rate}, %@me{} = state) do
+    # Set de rate
     {:noreply, %@me{rate: rate, workers: state.workers}}
   end
 end

@@ -16,6 +16,7 @@ defmodule ClonerWorker.Queue do
   end
 
   def handle_cast({:add_to_queue, task}, %@me{} = state) do
+    # Voeg een element vanachter aan de queue toe
     new_queue = state.tasks ++ [task]
     {:noreply, %@me{tasks: new_queue}}
   end
@@ -25,12 +26,14 @@ defmodule ClonerWorker.Queue do
   end
 
   def handle_call(:get_first, _from, state) do
+    # Return het eerste element
     first = List.first(state.tasks)
     GenServer.cast(@me, :remove_first)
     {:reply, first, state}
   end
 
   def handle_cast(:remove_first, %@me{} = state) do
+    # Verwijder het eerste element
     new_queue = Enum.drop(state.tasks, 1)
     {:noreply, %@me{tasks: new_queue}}
   end

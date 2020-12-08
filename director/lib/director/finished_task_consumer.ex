@@ -7,7 +7,9 @@ defmodule Director.FinishedTaskConsumer do
 
     def handle_message_set(message_set, state) do
         for %Message{value: message} <- message_set do
+            # Decode message
             decoded_message = AssignmentMessages.TaskResponse.decode!(message)
+            # Check message status
             if (decoded_message.task_result == :TASK_CONFLICT) do
                 Logger.error("There has been a task conflict for the task #{decoded_message.todo_task_uuid}")
             else
