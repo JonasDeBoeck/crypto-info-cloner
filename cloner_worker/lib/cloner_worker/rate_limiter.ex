@@ -17,11 +17,13 @@ defmodule ClonerWorker.RateLimiter do
     # Loop van 1 - rate
     Enum.each(1..state.rate, fn x ->
       worker = Enum.at(state.workers, x - 1)
-      if (worker != nil) do
+
+      if worker != nil do
         # Laat de worker werken
         ClonerWorker.Worker.work(worker)
       end
     end)
+
     # Drop het aantal workers uit de lijst gelijk aan de rate
     new_workers = Enum.drop(state.workers, state.rate)
     {:noreply, %@me{rate: state.rate, workers: new_workers}}
@@ -38,7 +40,7 @@ defmodule ClonerWorker.RateLimiter do
   end
 
   def set_rate(rate) do
-      GenServer.cast(@me, {:set_rate, rate})
+    GenServer.cast(@me, {:set_rate, rate})
   end
 
   def handle_cast({:set_rate, rate}, %@me{} = state) do

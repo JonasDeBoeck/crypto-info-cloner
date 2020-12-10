@@ -4,7 +4,6 @@ defmodule ChunkCreator.FinishedTasksKafkaContext do
   @finished "finished-tasks"
 
   def create_task_response_produce_message(uuid, result) do
-
   end
 
   def produce_messages(messages) when is_list(messages) do

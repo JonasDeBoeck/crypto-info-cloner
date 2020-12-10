@@ -11,13 +11,14 @@ defmodule ClonerWorker.Application do
     consumer_group_opts = []
     todo_consumer = ClonerWorker.TodoChunkConsumer
     topic_names = ["todo-chunks"]
+
     children = [
+      {Registry, [keys: :unique, name: ClonerWorker.MyRegistry]},
       {ClonerWorker.WorkerManager, []},
       {ClonerWorker.Queue, []},
       {ClonerWorker.WorkerDynamicSupervisor, []},
       {Task, &ClonerWorker.WorkerDynamicSupervisor.start_workers/0},
       {ClonerWorker.RateLimiter, []},
-      {Registry, [keys: :unique, name: ClonerWorker.MyRegistry]},
       supervisor(
         KafkaEx.ConsumerGroup,
         [todo_consumer, "todo-chunks-consumer-group", topic_names, consumer_group_opts]

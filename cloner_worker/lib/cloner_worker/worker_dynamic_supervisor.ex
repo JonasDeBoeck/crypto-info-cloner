@@ -14,9 +14,10 @@ defmodule ClonerWorker.WorkerDynamicSupervisor do
     amount_of_workers = Application.get_env(:cloner_worker, :n_workers)
     # Maak aantal workers aan en voeg deze doe aan de dynamic supervisor
     Enum.each(1..amount_of_workers, fn worker ->
-      childspec = {ClonerWorker.Worker, [name: worker |> Integer.to_string |> String.to_atom]}
+      childspec = {ClonerWorker.Worker, [name: worker |> Integer.to_string() |> String.to_atom()]}
       DynamicSupervisor.start_child(ClonerWorker.WorkerDynamicSupervisor, childspec)
     end)
+
     # Voeg de pids toe aan de manager
     for {_, pid, _, _} <- DynamicSupervisor.which_children(ClonerWorker.WorkerDynamicSupervisor) do
       ClonerWorker.WorkerManager.add_worker(%{pid: pid, available: true})

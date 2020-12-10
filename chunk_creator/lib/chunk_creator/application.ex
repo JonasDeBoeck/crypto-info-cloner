@@ -13,15 +13,25 @@ defmodule ChunkCreator.Application do
     finished_consumer = ChunkCreator.CompletedChunkConsumer
     todo_topic = ["todo-tasks"]
     finished_topic = ["finished-chunks"]
+
     children = [
       {ChunkCreator.Repo, []},
       %{
         id: TodoTasksConsumerGroup,
-        start: {KafkaEx.ConsumerGroup, :start_link, [todo_consumer, "todo-tasks-consumer-group", todo_topic, consumer_group_opts]}
+        start:
+          {KafkaEx.ConsumerGroup, :start_link,
+           [todo_consumer, "todo-tasks-consumer-group", todo_topic, consumer_group_opts]}
       },
       %{
         id: FinishedChunksConsumerGroup,
-        start: {KafkaEx.ConsumerGroup, :start_link, [finished_consumer, "finished-chunks-consumer-group", finished_topic, consumer_group_opts]}
+        start:
+          {KafkaEx.ConsumerGroup, :start_link,
+           [
+             finished_consumer,
+             "finished-chunks-consumer-group",
+             finished_topic,
+             consumer_group_opts
+           ]}
       }
     ]
 

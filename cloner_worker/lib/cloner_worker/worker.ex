@@ -5,12 +5,13 @@ defmodule ClonerWorker.Worker do
   @me __MODULE__
   @url "https://poloniex.com/public?command=returnTradeHistory&currencyPair="
   defstruct tasks: []
+
   def start_link(name: name) do
-    n = {:via, Registry, {ClonerWorker.Myregistry, name}}
+    n = {:via, Registry, {ClonerWorker.MyRegistry, name}}
     GenServer.start_link(@me, n, name: n)
   end
 
-  def init(_name) do
+  def init(name) do
     {:ok, %@me{}}
   end
 
@@ -30,24 +31,40 @@ defmodule ClonerWorker.Worker do
     # Pak de eerste (en enige) taak uit de lijst van taken
     task = Enum.at(state.tasks, 0)
     # Stel de request url samen
-    request_url = "#{@url}#{task.currency_pair}&start=#{task.from_unix_ts}&end=#{task.until_unix_ts}"
+    request_url =
+      "#{@url}#{task.currency_pair}&start=#{task.from_unix_ts}&end=#{task.until_unix_ts}"
+
     # Stuur request
     {:ok, res} = Tesla.get(request_url, [])
     # Parse de body
     result = Jason.decode!(res.body)
     # Maak een lijst van ClonedEntries
     entries = Enum.map(result, &create_cloned_entry/1)
-    if (length(result) > 1000) do
+
+    if length(result) > 1000 do
       # Zet WINDOW_TOO_BIG op de finished-chunks topic
-      cloned_chunk = %AssignmentMessages.ClonedChunk{chunk_result: :WINDOW_TOO_BIG, original_todo_chunk: task, entries: entries, possible_error_message: "More than 1000 elements"}
+      cloned_chunk = %AssignmentMessages.ClonedChunk{
+        chunk_result: :WINDOW_TOO_BIG,
+        original_todo_chunk: task,
+        entries: entries,
+        possible_error_message: "More than 1000 elements"
+      }
+
       encoded_cloned_chunk = AssignmentMessages.ClonedChunk.encode!(cloned_chunk)
       send_kafka_request(encoded_cloned_chunk)
     else
       # Zet geclonede chunk op de finished-chunks topic
-      cloned_chunk = %AssignmentMessages.ClonedChunk{chunk_result: :COMPLETE, original_todo_chunk: task, entries: entries, possible_error_message: ""}
+      cloned_chunk = %AssignmentMessages.ClonedChunk{
+        chunk_result: :COMPLETE,
+        original_todo_chunk: task,
+        entries: entries,
+        possible_error_message: ""
+      }
+
       encoded_cloned_chunk = AssignmentMessages.ClonedChunk.encode!(cloned_chunk)
       send_kafka_request(encoded_cloned_chunk)
     end
+
     # Drop de taak uit de lijst
     new_tasks = Enum.drop(state.tasks, 1)
     # Verander zijn status

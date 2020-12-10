@@ -11,6 +11,7 @@ defmodule Director.Application do
     consumer_group_opts = []
     finished_consumer = Director.FinishedTaskConsumer
     topic_names = ["finished-tasks"]
+
     children = [
       {Director.Repo, []},
       supervisor(
