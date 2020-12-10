@@ -5,7 +5,8 @@ defmodule ClonerWorker.Worker do
   @me __MODULE__
   @url "https://poloniex.com/public?command=returnTradeHistory&currencyPair="
   defstruct tasks: []
-  def start_link(name: n) do
+  def start_link(name: name) do
+    n = {:via, Registry, {ClonerWorker.Myregistry, name}}
     GenServer.start_link(@me, n, name: n)
   end
 
