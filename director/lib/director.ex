@@ -1,5 +1,5 @@
 defmodule Director do
-  alias KafkaEx.Protocol.Produce.Request
+  alias Director.TodoTasksKafkaContext
   alias Director.TopicsContext
   require Logger
 
@@ -11,7 +11,7 @@ defmodule Director do
     TopicsContext.delete_topics()
   end
 
-  def create_tasks() do
+  def automatic_create_tasks() do
     # Get config variabelen
     pairs = Application.fetch_env!(:director, :pairs_to_clone)
     {:ok, from} = DateTime.from_unix(Application.fetch_env!(:director, :from))
@@ -22,7 +22,7 @@ defmodule Director do
     end)
   end
 
-  def create_task(from, until, pair) do
+  defp create_task(from, until, pair) do
     # Als de currency pair nog niet in de database bestaat, maak hem dan aan
     if (DatabaseInteraction.CurrencyPairContext.get_pair_by_name(pair) == nil) do
       Logger.info("Currency pair #{pair} does not yet exist, creating...")
@@ -35,15 +35,9 @@ defmodule Director do
     from_until = DatabaseInteraction.CurrencyPairChunkContext.generate_missing_chunks(from, until, currency_pair)
     res = Enum.at(from_until, 0)
     Logger.info("Generated missing chunks for currency pair: #{pair} from: #{IO.inspect(elem(res, 0))} until: #{IO.inspect(elem(res, 1))}")
-    # Maak task
-    todo_task = %AssignmentMessages.TodoTask{task_operation: :ADD, currency_pair: pair, from_unix_ts: from |> DateTime.to_unix, until_unix_ts: until |> DateTime.to_unix, task_uuid: Ecto.UUID.generate}
-    # Encode task
-    encoded_task = AssignmentMessages.encode_message!(todo_task)
-    # Wrap task in een message
-    message = %KafkaEx.Protocol.Produce.Message{value: encoded_task}
-    # Wrap de message in een request
-    request = %{%Request{topic: "todo-tasks", required_acks: 1} | messages: [message]}
-    # Zet de request op Kafka
-    KafkaEx.produce(request)
+    # Maak kafka message
+    message = TodoTasksKafkaContext.create_kafka_message({from, until}, pair)
+    # Zet de message op de todo-tasks topic
+    TodoTasksKafkaContext.produce_to_topic(message)
   end
 end

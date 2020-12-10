@@ -13,7 +13,7 @@ defmodule Director.FinishedTaskConsumer do
             if (decoded_message.task_result == :TASK_CONFLICT) do
                 Logger.error("There has been a task conflict for the task #{decoded_message.todo_task_uuid}")
             else
-                Logger.info("Task #{decoded_message.todo_task_uuid} has been completed")
+                Logger.info("The following task has been completed: #{decoded_message.todo_task_uuid} has been completed")
             end
         end
         {:async_commit, state}

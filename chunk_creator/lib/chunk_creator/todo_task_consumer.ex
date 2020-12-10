@@ -1,8 +1,8 @@
-defmodule ChunkCreator.TodoTaskConsumer do 
+defmodule ChunkCreator.TodoTaskConsumer do
     use KafkaEx.GenConsumer
     require Logger
     require IEx
-    alias KafkaEx.Protocol.Fetch.Message
+
     alias KafkaEx.Protocol.Produce.Request
 
     @todo "todo-chunks"
@@ -24,6 +24,7 @@ defmodule ChunkCreator.TodoTaskConsumer do
                 task_attrs = %{from: utc_from, until: utc_until, uuid: decoded_task.task_uuid}
                 # Currency pair uit de db halen
                 pair = DatabaseInteraction.CurrencyPairContext.get_pair_by_name(decoded_task.currency_pair)
+                IO.inspect(pair)
                 # Task createn
                 {:ok, task} = DatabaseInteraction.TaskStatusContext.create_full_task(task_attrs, pair, chunks)
                 # Create chunks en zet deze op kafka
@@ -34,7 +35,7 @@ defmodule ChunkCreator.TodoTaskConsumer do
                     request = %{%Request{topic: @todo, required_acks: 1} | messages: [message]}
                     KafkaEx.produce(request)
                 end
-            else 
+            else
                 # Wel overlap dus finished task met :TASK_CONFLICT op kafka zetten
                 finished_task = %AssignmentMessages.TaskResponse{task_result: :TASK_CONFLICT, todo_task_uuid: decoded_task.task_uuid}
                 encoded_finished_task = AssignmentMessages.encode_message!(finished_task)
