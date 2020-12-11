@@ -11,7 +11,7 @@ defmodule ClonerWorker.Worker do
     GenServer.start_link(@me, n, name: n)
   end
 
-  def init(name) do
+  def init(_name) do
     {:ok, %@me{}}
   end
 
@@ -30,46 +30,90 @@ defmodule ClonerWorker.Worker do
   def handle_cast(:work, state) do
     # Pak de eerste (en enige) taak uit de lijst van taken
     task = Enum.at(state.tasks, 0)
-    # Stel de request url samen
-    request_url =
-      "#{@url}#{task.currency_pair}&start=#{task.from_unix_ts}&end=#{task.until_unix_ts}"
-
-    # Stuur request
-    {:ok, res} = Tesla.get(request_url, [])
-    # Parse de body
-    result = Jason.decode!(res.body)
-    # Maak een lijst van ClonedEntries
-    entries = Enum.map(result, &create_cloned_entry/1)
-
-    if length(result) > 1000 do
-      # Zet WINDOW_TOO_BIG op de finished-chunks topic
-      cloned_chunk = %AssignmentMessages.ClonedChunk{
-        chunk_result: :WINDOW_TOO_BIG,
-        original_todo_chunk: task,
-        entries: entries,
-        possible_error_message: "More than 1000 elements"
-      }
-
-      encoded_cloned_chunk = AssignmentMessages.ClonedChunk.encode!(cloned_chunk)
-      send_kafka_request(encoded_cloned_chunk)
-    else
-      # Zet geclonede chunk op de finished-chunks topic
-      cloned_chunk = %AssignmentMessages.ClonedChunk{
-        chunk_result: :COMPLETE,
-        original_todo_chunk: task,
-        entries: entries,
-        possible_error_message: ""
-      }
-
-      encoded_cloned_chunk = AssignmentMessages.ClonedChunk.encode!(cloned_chunk)
-      send_kafka_request(encoded_cloned_chunk)
-    end
-
+    # Send de request
+    send_request(task)
     # Drop de taak uit de lijst
     new_tasks = Enum.drop(state.tasks, 1)
     # Verander zijn status
     ClonerWorker.WorkerManager.change_worker_status(self())
     {:noreply, %@me{tasks: new_tasks}}
+  end
+
+  defp send_request(task) do
+    # Stel de request url samen
+    request_url =
+      "#{@url}#{task.currency_pair}&start=#{task.from_unix_ts}&end=#{task.until_unix_ts}"
+
+    # Stuur request
+    {_, res} = Tesla.get(request_url, [])
+    # Handle de request body
+    handle_request_body(res, task)
+  end
+
+  defp handle_request_body(res, task) do
+    # Als de response code 200 is
+    if res.status == 200 do
+      # Parse de body
+      result = Jason.decode!(res.body)
+      # Als de body een map is, dan bevat de request een error
+      if !is_map(result) do
+        # Maak een lijst van ClonedEntries
+        entries = Enum.map(result, &create_cloned_entry/1)
+
+        if length(result) > 1000 do
+          # Zet WINDOW_TOO_BIG op de finished-chunks topic
+          encoded_cloned_chunk = create_chunk_message(task, entries, :WINDOW_TOO_BIG)
+          send_kafka_request(encoded_cloned_chunk)
+        else
+          # Zet geclonede chunk op de finished-chunks topic
+          encoded_cloned_chunk = create_chunk_message(task, entries, :COMPLETE)
+          send_kafka_request(encoded_cloned_chunk)
+        end
+      else
+        # Zet een chunk met de error op de finished-chunks topic
+        encoded_cloned_chunk = create_chunk_error_message(task, [], result)
+        send_kafka_request(encoded_cloned_chunk)
+      end
+    end
+  end
+
+  # Create chunk message for window too big, pattern match
+  defp create_chunk_message(task, entries, :WINDOW_TOO_BIG) do
+    cloned_chunk = %AssignmentMessages.ClonedChunk{
+      chunk_result: :WINDOW_TOO_BIG,
+      original_todo_chunk: task,
+      entries: entries,
+      possible_error_message: "More than 1000 elements"
+    }
+
+    encoded_cloned_chunk = AssignmentMessages.ClonedChunk.encode!(cloned_chunk)
+    encoded_cloned_chunk
+  end
+
+  # Create chunk message for complete, pattern match
+  defp create_chunk_message(task, entries, :COMPLETE) do
+    cloned_chunk = %AssignmentMessages.ClonedChunk{
+      chunk_result: :COMPLETE,
+      original_todo_chunk: task,
+      entries: entries,
+      possible_error_message: ""
+    }
+
+    encoded_cloned_chunk = AssignmentMessages.ClonedChunk.encode!(cloned_chunk)
+    encoded_cloned_chunk
+  end
+
+  # Create chunk message for error
+  defp create_chunk_error_message(task, entries, result) do
+    cloned_chunk = %AssignmentMessages.ClonedChunk{
+      chunk_result: :RANDOM_ERROR,
+      original_todo_chunk: task,
+      entries: entries,
+      possible_error_message: Map.get(result, "error")
+    }
+
+    encoded_cloned_chunk = AssignmentMessages.ClonedChunk.encode!(cloned_chunk)
+    encoded_cloned_chunk
   end
 
   defp send_kafka_request(encoded_cloned_chunk) do

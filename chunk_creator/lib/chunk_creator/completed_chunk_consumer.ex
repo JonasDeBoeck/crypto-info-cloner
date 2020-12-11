@@ -24,6 +24,10 @@ defmodule ChunkCreator.CompletedChunkConsumer do
     handle_chunk(decoded_message, decoded_message.chunk_result)
   end
 
+  defp handle_chunk(decoded_message, :RANDOM_ERROR) do
+    Logger.error(decoded_message.possible_error_message)
+  end
+
   # Handle de complete chunks, pattern mathc op :COMPLETE
   defp handle_chunk(decoded_message, :COMPLETE) do
     # Fetch de info en steek deze in de juiste variabelen

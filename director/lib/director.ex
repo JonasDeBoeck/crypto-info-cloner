@@ -40,14 +40,6 @@ defmodule Director do
         currency_pair
       )
 
-    res = Enum.at(from_until, 0)
-
-    Logger.info(
-      "Generated missing chunks for currency pair: #{pair} from: #{IO.inspect(elem(res, 0))} until: #{
-        IO.inspect(elem(res, 1))
-      }"
-    )
-
     # Maak kafka message
     message = TodoTasksKafkaContext.create_kafka_message({from, until}, pair)
     # Zet de message op de todo-tasks topic

@@ -23,7 +23,8 @@ defmodule ClonerWorker.MixProject do
   defp deps do
     [
       {:kafka_ex, "~> 0.11.0"},
-      {:assignment_messages, git: "https://github.com/distributed-applications-2021/assignment-messages", branch: "main"},
+      {:assignment_messages,
+       git: "https://github.com/distributed-applications-2021/assignment-messages", branch: "main"},
       {:tesla, "~> 1.4"},
       {:jason, "~> 1.2"}
     ]
