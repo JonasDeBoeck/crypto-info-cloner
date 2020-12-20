@@ -4,7 +4,6 @@ defmodule Director.Application do
   @moduledoc false
 
   use Application
-  import Supervisor.Spec
 
   @impl true
   def start(_type, _args) do
@@ -14,10 +13,12 @@ defmodule Director.Application do
 
     children = [
       {Director.Repo, []},
-      supervisor(
-        KafkaEx.ConsumerGroup,
-        [finished_consumer, "finished-tasks-consumer-group", topic_names, consumer_group_opts]
-      )
+      %{
+        id: FinishedTasksConsumerGroup,
+        start:
+          {KafkaEx.ConsumerGroup, :start_link,
+          [finished_consumer, "finished-tasks-consumer-group", topic_names, consumer_group_opts]}
+      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

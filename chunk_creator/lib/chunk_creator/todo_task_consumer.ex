@@ -39,7 +39,6 @@ defmodule ChunkCreator.TodoTaskConsumer do
       task_attrs = %{from: utc_from, until: utc_until, uuid: decoded_task.task_uuid}
       # Currency pair uit de db halen
       pair = DatabaseInteraction.CurrencyPairContext.get_pair_by_name(decoded_task.currency_pair)
-      IO.inspect(pair)
       # Task createn
       {:ok, task} =
         DatabaseInteraction.TaskStatusContext.create_full_task(task_attrs, pair, chunks)
@@ -71,15 +70,8 @@ defmodule ChunkCreator.TodoTaskConsumer do
   # Zet de requests op kafka van de tasks die overlap hebben
   defp produce(decoded_task, @finished) do
     # Overlap dus finished task met :TASK_CONFLICT op kafka zetten
-    finished_task = %AssignmentMessages.TaskResponse{
-      task_result: :TASK_CONFLICT,
-      todo_task_uuid: decoded_task.task_uuid
-    }
-
-    encoded_finished_task = AssignmentMessages.encode_message!(finished_task)
-    message = %KafkaEx.Protocol.Produce.Message{value: encoded_finished_task}
-    request = %{%Request{topic: @finished, required_acks: 1} | messages: [message]}
-    KafkaEx.produce(request)
+    message = ChunkCreator.FinishedTasksKafkaContext.create_task_response_produce_message(decoded_task.task_uuid, :TASK_CONFLICT)
+    ChunkCreator.FinishedTasksKafkaContext.produce_message(message)
   end
 
   defp get_task_for_pair(loaded_associations, pair) do

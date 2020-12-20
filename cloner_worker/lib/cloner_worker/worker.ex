@@ -2,6 +2,7 @@ defmodule ClonerWorker.Worker do
   use Tesla
   use GenServer
   alias KafkaEx.Protocol.Produce.Request
+  require Logger
   @me __MODULE__
   @url "https://poloniex.com/public?command=returnTradeHistory&currencyPair="
   defstruct tasks: []
@@ -60,11 +61,14 @@ defmodule ClonerWorker.Worker do
         # Maak een lijst van ClonedEntries
         entries = Enum.map(result, &create_cloned_entry/1)
 
-        if length(result) > 1000 do
+        if length(result) >= 1000 do
+          Logger.warn("Window too big for pair #{task.currency_pair}... #{DateTime.from_unix!(task.from_unix_ts)} - #{DateTime.from_unix!(task.until_unix_ts)}")
           # Zet WINDOW_TOO_BIG op de finished-chunks topic
           encoded_cloned_chunk = create_chunk_message(task, entries, :WINDOW_TOO_BIG)
           send_kafka_request(encoded_cloned_chunk)
         else
+          {hours, minutes, seconds} = seconds_to_time(task.until_unix_ts - task.from_unix_ts)
+          Logger.info("Succesfully cloned #{task.currency_pair}. Length: #{length(result)} Window time in seconds: #{seconds}, minutes: #{minutes}, hours: #{hours}")
           # Zet geclonede chunk op de finished-chunks topic
           encoded_cloned_chunk = create_chunk_message(task, entries, :COMPLETE)
           send_kafka_request(encoded_cloned_chunk)
@@ -75,6 +79,15 @@ defmodule ClonerWorker.Worker do
         send_kafka_request(encoded_cloned_chunk)
       end
     end
+  end
+
+  defp seconds_to_time(seconds) do
+    hours = round(seconds / 3600)
+    new_sec = seconds - (seconds / 3600)
+    IO.puts(new_sec)
+    minutes = round(new_sec / 60)
+    leftover_sec = seconds - (new_sec / 60)
+    {hours, minutes, leftover_sec}
   end
 
   # Create chunk message for window too big, pattern match

@@ -9,6 +9,8 @@ defmodule ClonerWorker.WorkerManager do
   end
 
   def init(_args) do
+    # Start workers
+    ClonerWorker.WorkerDynamicSupervisor.start_workers
     # Elke seconden nieuwe tasks assigen aan de available workers
     :timer.send_interval(1000, :assign_work)
     {:ok, %@me{}}

@@ -56,6 +56,8 @@ defmodule ChunkCreator.CompletedChunkConsumer do
     if elem(status, 0) do
       # Handle de afgewerkte taak
       handle_finished_task(task)
+    else
+      Logger.info("UPDATE: #{elem(status, 2).done} / #{elem(status, 2).n} is done for task with uuid #{elem(status, 1).uuid}")
     end
   end
 
@@ -68,14 +70,10 @@ defmodule ChunkCreator.CompletedChunkConsumer do
     until = elem(info, 2)
     task = elem(info, 3)
     # Halveer de chunks
-    chunks =
-      Enum.map(
-        DatabaseInteraction.TaskRemainingChunkContext.halve_chunk(task_db_id, from, until),
-        fn x -> x end
-      )
-
+    chunks = DatabaseInteraction.TaskRemainingChunkContext.halve_chunk(task_db_id, from, until)
+    halved = Tuple.to_list(chunks)
     # Zet elke chunk apart op de todo-chunks topic
-    for chunk <- chunks do
+    for chunk <- halved do
       produce(chunk, task, @todo)
     end
   end
@@ -101,29 +99,14 @@ defmodule ChunkCreator.CompletedChunkConsumer do
 
   # Produce de KafkaRequest voor de todo topic
   defp produce(chunk, task, @todo) do
-    todo_chunk = %AssignmentMessages.TodoChunk{
-      currency_pair: task.currency_pair,
-      from_unix_ts: DateTime.to_unix(chunk.from),
-      until_unix_ts: DateTime.to_unix(chunk.until),
-      task_dbid: task.task_status.id
-    }
-
-    encoded_chunk = AssignmentMessages.encode_message!(todo_chunk)
-    message = %KafkaEx.Protocol.Produce.Message{value: encoded_chunk}
-    request = %{%Request{topic: @todo, required_acks: 1} | messages: [message]}
-    KafkaEx.produce(request)
+    loaded = DatabaseInteraction.TaskStatusContext.load_association(task, [:currency_pair])
+    message = ChunkCreator.TodoChunksKafkaContext.task_remaining_chunk_to_produce_message(chunk, loaded.currency_pair.currency_pair)
+    ChunkCreator.TodoChunksKafkaContext.produce_message(message)
   end
 
   # Produce de KafkaRequest op de finished topic
   defp produce(task, @finished) do
-    task_response = %AssignmentMessages.TaskResponse{
-      task_result: :COMPLETE,
-      todo_task_uuid: task.uuid
-    }
-
-    encoded_task_response = AssignmentMessages.TaskResponse.encode!(task_response)
-    message = %KafkaEx.Protocol.Produce.Message{value: encoded_task_response}
-    request = %{%Request{topic: @finished, required_acks: 1} | messages: [message]}
-    KafkaEx.produce(request)
+    message = ChunkCreator.FinishedTasksKafkaContext.create_task_response_produce_message(task.uuid, :COMPLETE)
+    ChunkCreator.FinishedTasksKafkaContext.produce_message(message)
   end
 end

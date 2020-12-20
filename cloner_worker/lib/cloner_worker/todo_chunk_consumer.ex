@@ -3,7 +3,6 @@ defmodule ClonerWorker.TodoChunkConsumer do
   require Logger
   require IEx
   alias KafkaEx.Protocol.Fetch.Message
-  alias KafkaEx.Protocol.Produce.Request
 
   def handle_message_set(message_set, state) do
     for %Message{value: message} <- message_set do
