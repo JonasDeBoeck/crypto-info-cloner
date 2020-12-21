@@ -22,7 +22,7 @@ defmodule Director do
     end)
   end
 
-  defp create_task(from, until, pair) do
+  def create_task(from, until, pair) do
     # Als de currency pair nog niet in de database bestaat, maak hem dan aan
     if DatabaseInteraction.CurrencyPairContext.get_pair_by_name(pair) == nil do
       Logger.info("Currency pair #{pair} does not yet exist, creating...")

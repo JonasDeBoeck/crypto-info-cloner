@@ -18,8 +18,3 @@ config :director,
   pairs_to_clone: ["BTC_ETH", "USDT_BTC", "USDC_BTC"],
   from: 1_590_969_600,
   until: 1_591_500_000
-
-#  config :director,
-#    pairs_to_clone: ["NEE_JA"],
-#    from: 1606780800,
-#    until: 1606838400
